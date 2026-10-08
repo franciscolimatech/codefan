@@ -1,38 +1,33 @@
-# CodeFan — protótipo
+# CodeFan MVP
 
-Protótipo navegável criado para explorar a experiência de uma plataforma universitária de aprendizado prático, comunidades técnicas e competições.
+MVP navegável para a apresentação ao coordenador: **Nivelamento → identificação de lacunas → trilhas → conceitos → desafios → orientação → progresso**.
 
-## Princípio de produto
+O projeto React/Vite original foi preservado. O redesign e as seis questões de Python foram integrados a partir do ZIP do Figma Make, sem substituir o aplicativo pelo export.
 
-> Liberdade para explorar, orientação para não se perder.
-
-Todo desafio continua acessível. No modo **Treinamento**, o CodeFan ajuda o aluno a entender o que o desafio usa, o que ele já praticou e qual o próximo passo (trilhas, "Não sei por onde começar", dicas progressivas e conceitos curtos). Nas **Arenas** nada disso aparece: arena mede desempenho.
-
-## Executar no Windows
-
-No PowerShell, dentro da pasta do projeto:
-
-```powershell
+```bash
 npm install
 npm run dev
-```
-
-Abra o endereço exibido pelo Vite no terminal.
-
-## Gerar build
-
-```powershell
 npm run build
+npm test
 ```
 
-## Stack
+Para validar a navegação automatizada, execute o preview em um terminal e o teste em outro:
 
-- Vite
-- React
-- React Router
-- Tailwind CSS
-- Lucide React
+```bash
+npm run preview -- --host 127.0.0.1
+```
 
-## Observação
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
 
-O projeto usa dados fictícios locais (`src/data/mockData.js`) e estado em memória: recarregar a página reinicia a demonstração. Não há backend, autenticação real, executor de código ou sandbox nesta etapa.
+`CODEFAN_URL` permite testar outro endereço. Capturas geradas ficam em `test-results/`, ignorado pelo Git.
+
+O nivelamento, o progresso, as dicas e os rascunhos persistem no navegador. Há fallback em memória quando o armazenamento é bloqueado. Refazer o nivelamento substitui somente o diagnóstico da tentativa; a prática nas trilhas continua preservada.
+
+O nivelamento inicial nunca atribui **CONSISTENTE**. Acertos independentes e assistidos são evidências diferentes; erros e “Não sei ainda” indicam evidência insuficiente, sem concluir ausência de conhecimento.
+
+O MVP não tem backend real. O Judge, os dados agregados da turma, o nível e a constância são demonstrativos. A execução não avalia código; a submissão simulada registra a prática local de um rascunho alterado. Banco de Dados e Frontend permanecem indisponíveis para nivelamento, conforme o protótipo.
+
+Detalhes, arquivos e validação: [Relatório da integração](docs/INTEGRACAO-MVP.md).

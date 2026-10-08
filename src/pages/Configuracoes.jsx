@@ -4,8 +4,8 @@ import { currentUser } from '../data/mockData';
 
 export default function Configuracoes() {
   const [emailNotifications, setEmailNotifications] = useState(true);
-  const [arenaNotifications, setArenaNotifications] = useState(true);
-  const [communityNotifications, setCommunityNotifications] = useState(true);
+  const [learningNotifications, setLearningNotifications] = useState(true);
+  const [hintNotifications, setHintNotifications] = useState(true);
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
@@ -14,7 +14,7 @@ export default function Configuracoes() {
   };
 
   return (
-    <div className="min-h-screen p-8 text-[#e4e6ef] max-w-4xl mx-auto space-y-8">
+    <div className="min-h-screen p-4 sm:p-8 text-[#e4e6ef] max-w-4xl mx-auto space-y-8">
       <div>
         <h1 className="text-2xl font-bold">Configurações</h1>
         <p className="text-sm text-[#8b90a5] mt-1">Ajuste sua conta e preferências da plataforma.</p>
@@ -58,8 +58,8 @@ export default function Configuracoes() {
         <div className="divide-y divide-[#252a3a]">
           {[
             ['Lembretes por e-mail', 'Receba avisos importantes também no e-mail institucional.', emailNotifications, setEmailNotifications],
-            ['Arenas', 'Avisos de inscrição, início e resultado de competições.', arenaNotifications, setArenaNotifications],
-            ['Comunidades', 'Respostas, menções e novidades das comunidades que você acompanha.', communityNotifications, setCommunityNotifications],
+            ['Aprendizagem', 'Lembretes para continuar suas trilhas e desafios.', learningNotifications, setLearningNotifications],
+            ['Orientação', 'Sugestões de conceitos e dicas para seu próximo passo.', hintNotifications, setHintNotifications],
           ].map(([title, description, value, setter]) => (
             <div key={title} className="p-5 flex items-center justify-between gap-6">
               <div>

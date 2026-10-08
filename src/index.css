@@ -41,3 +41,28 @@ input, textarea, select {
 .code-font {
   font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
 }
+
+@layer components {
+  .mvp-page { @apply p-4 sm:p-8 lg:p-10 mx-auto space-y-7; }
+  .mvp-title { @apply text-2xl sm:text-3xl font-bold tracking-tight mt-2; }
+  .mvp-eyebrow { @apply text-[10px] sm:text-xs tracking-[0.12em] font-semibold text-[#a28aff]; }
+  .mvp-muted { @apply text-sm text-[#8b90a5] leading-relaxed; }
+  .mvp-card { @apply bg-[#12141f] border border-[#252a3a] rounded-2xl p-5 sm:p-6; }
+  .mvp-icon { @apply w-12 h-12 rounded-xl bg-[#7c5cfc]/10 text-[#a28aff] inline-flex items-center justify-center; }
+  .mvp-button { @apply inline-flex items-center justify-center gap-2 bg-[#7c5cfc] hover:bg-[#6a4be6] text-white text-sm font-medium px-5 py-3 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed; }
+  .mvp-link { @apply inline-flex items-center gap-2 text-sm font-medium text-[#a28aff] hover:text-[#c7b8ff] transition-colors; }
+  .mvp-note { @apply flex items-start gap-2 text-xs text-[#8b90a5] leading-relaxed; }
+  .mvp-note svg { @apply shrink-0; }
+  .mvp-progress { @apply w-full h-1.5 bg-[#252a3a] rounded-full overflow-hidden; }
+  .mvp-progress > span { @apply block h-full bg-[#7c5cfc] rounded-full transition-all; }
+  .mvp-process { @apply flex flex-wrap items-center gap-4 border-y border-[#252a3a] py-5 text-xs text-[#8b90a5]; }
+  .mvp-process > span { @apply flex items-center gap-2; }
+  .mvp-footer { @apply text-xs text-[#8b90a5] text-center border-t border-[#252a3a] pt-6; }
+}
+
+button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
+button:not(:disabled), a { cursor: pointer; }
+:focus-visible { outline: 2px solid #a28aff; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

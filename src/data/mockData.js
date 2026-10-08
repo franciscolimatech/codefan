@@ -14,10 +14,9 @@ export const currentUser = {
   xp: 2840,
   xpProximoNivel: 3500,
   titulo: 'Explorador',
-  desafiosResolvidos: 47,
+  desafiosResolvidos: 4,
   sequenciaDias: 8,
-  comunidades: ['c1', 'c2', 'c3', 'c5'],
-  stats: { arenasParticipadas: 5, taxaAcerto: 73, melhorPosicao: 7 },
+
 };
 
 export const professores = [
@@ -1164,27 +1163,13 @@ export const progressoInicial = {
     'git-colaboracao': ['gt-1', 'gt-2'],
   },
   desafiosResolvidos: ['d1', 'd5', 'd6', 'd9'],
-  conceitosPraticados: [],
-  evidencias: {
-    variaveis: { desafios: 9, checkpoints: 2, guiados: 3 },
-    condicionais: { desafios: 8, checkpoints: 2, guiados: 2 },
-    loops: { desafios: 4, checkpoints: 1, guiados: 2 },
-    funcoes: { desafios: 5, checkpoints: 1, guiados: 1 },
-    listas: { desafios: 2, checkpoints: 0, guiados: 0 },
-    dicionarios: { desafios: 0, checkpoints: 0, guiados: 0 },
-    strings: { desafios: 6, checkpoints: 1, guiados: 1 },
-    recursao: { desafios: 2, checkpoints: 0, guiados: 0 },
-    arvores: { desafios: 0, checkpoints: 0, guiados: 0 },
-    regex: { desafios: 0, checkpoints: 0, guiados: 0 },
-    excecoes: { desafios: 3, checkpoints: 1, guiados: 1 },
-    rest: { desafios: 1, checkpoints: 0, guiados: 0 },
-    'sql-basico': { desafios: 5, checkpoints: 1, guiados: 0 },
-    join: { desafios: 0, checkpoints: 0, guiados: 0 },
-    'testes-unitarios': { desafios: 1, checkpoints: 0, guiados: 0 },
-    git: { desafios: 2, checkpoints: 0, guiados: 1 },
-    concorrencia: { desafios: 0, checkpoints: 0, guiados: 0 },
-    componentes: { desafios: 3, checkpoints: 0, guiados: 1 },
-  },
+  conceitosPraticados: ['variaveis', 'condicionais', 'loops', 'excecoes', 'git'],
+  // Evidências iniciais derivadas apenas das atividades disponíveis no catálogo.
+  evidencias: Object.fromEntries(habilidades.map(h => [h.id, {
+    desafios: desafios.filter(d => ['d1', 'd5', 'd6', 'd9'].includes(d.id) && d.habilidades?.includes(h.id)).length,
+    checkpoints: 0,
+    guiados: ['variaveis', 'condicionais', 'loops', 'excecoes', 'git'].includes(h.id) ? 1 : 0,
+  }])),
 };
 
 // Visão do professor (dados agregados fictícios)

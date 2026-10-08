@@ -72,7 +72,7 @@ export default function OrientacaoDesafio({ desafioId, origem, onClose, onContin
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-[#e4e6ef]">{item.nome}</p>
                     <p className={`text-xs ${item.praticada ? 'text-[#8b90a5]' : 'text-amber-400'}`}>
-                      {item.praticada ? 'você já praticou' : 'ainda não praticado'}
+                      {item.praticada ? 'você já demonstrou ou praticou' : 'ainda não praticado'}
                     </p>
                   </div>
                   {!item.praticada && (
@@ -94,7 +94,7 @@ export default function OrientacaoDesafio({ desafioId, origem, onClose, onContin
             </div>
           ) : (
             <div className="rounded-lg border-l-2 border-emerald-400 bg-emerald-400/5 p-4">
-              <p className="text-sm text-[#e4e6ef]">Você já praticou tudo o que este desafio usa.</p>
+              <p className="text-sm text-[#e4e6ef]">Você já demonstrou ou praticou as habilidades que este desafio usa.</p>
               <p className="text-xs text-[#8b90a5] mt-1">Talvez falte só organizar o raciocínio. Uma dica pode ajudar a dar o primeiro passo.</p>
             </div>
           )}

@@ -1,293 +1,323 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Flame, 
-  ArrowRight, 
-  Clock, 
-  Swords, 
-  Code2, 
-  Trophy, 
-  Zap, 
-  ChevronRight, 
-  Users, 
-  MessageSquare, 
+import {
+  Flame,
+  ArrowRight,
+  Route,
   Target,
-  Route
+  Sparkles,
+  Code2,
+  Clock,
+  BookOpen,
 } from 'lucide-react';
-import { currentUser, desafios, arenas, mensagensComunidade, atividadesRecentes, trilhas } from '../data/mockData';
-import { destinoEtapa } from '../data/aprendizagem';
+import { trilhas, getDesafio } from '../data/mockData';
+import { destinoEtapa, habilidadePorId } from '../data/aprendizagem';
 import { useProgresso } from '../context/ProgressoContext';
+import EstadoHabilidade from '../components/aprendizagem/EstadoHabilidade';
 
 export default function Home() {
-  const user = currentUser || {
-    nome: 'Dev',
-    nivel: 5,
-    xp: 2450,
-    xpProximoNivel: 3000,
-    sequenciaDias: 12
-  };
-
-  const xpPercentage = Math.round((user.xp / user.xpProximoNivel) * 100);
-
-  const { progresso, resumoTrilha } = useProgresso();
-  const trilhaAtual = trilhas.find((t) => t.id === progresso.ultimaTrilha) || trilhas[0];
-  const resumoTrilhaAtual = resumoTrilha(trilhaAtual);
-
-  const recentChallenges = desafios ? desafios.slice(0, 2) : [];
-  const upcomingArena = arenas && arenas.length > 0 ? arenas[0] : null;
-
-  const recentActivity = [
-    { id: 1, community: 'Algoritmos e Estruturas de Dados', author: 'Prof. Silva', message: 'Lista de exercícios 3 liberada!', time: '2h atrás' },
-    { id: 2, community: 'Frontend Masters', author: 'Maria', message: 'Alguém conseguiu resolver o desafio de React Hooks?', time: '4h atrás' },
-    { id: 3, community: 'Maratona de Programação', author: 'João', message: 'Treino amanhã às 14h, não se esqueçam.', time: '1d atrás' }
-  ];
-
-  const suggestedChallenge = desafios ? desafios[desafios.length - 1] : {
-    id: 's1',
-    titulo: 'Otimização de Grafos',
-    categoria: 'Algoritmos',
-    dificuldade: 'Difícil'
-  };
-
-  const getDifficultyStyles = (diff) => {
-    switch(diff?.toLowerCase()) {
-      case 'easy': case 'fácil': return 'text-emerald-400 bg-emerald-400/10';
-      case 'medium': case 'médio': return 'text-amber-400 bg-amber-400/10';
-      case 'hard': case 'difícil': return 'text-red-400 bg-red-400/10';
-      default: return 'text-emerald-400 bg-emerald-400/10';
-    }
-  };
-
+  const {
+    usuario,
+    progresso,
+    resumoTrilha,
+    nivelamento,
+    recomendacao,
+    atividades,
+    armazenamentoDisponivel,
+  } = useProgresso();
+  const atual =
+    trilhas.find((t) => t.id === progresso.ultimaTrilha) || trilhas[0];
+  const resumo = resumoTrilha(atual);
+  const recomendada = trilhas.find((t) => t.id === recomendacao.trilhaId);
+  const desafio = getDesafio(recomendacao.desafioId);
+  const retomando =
+    nivelamento.answers.length ||
+    nivelamento.selected !== null ||
+    nivelamento.helped.length;
+  const destinoNivelamento = nivelamento.completed
+    ? '/nivelamento/resultado'
+    : '/nivelamento';
   return (
-    <div className="p-8 max-w-6xl mx-auto space-y-10">
-      
-      {/* 1. Welcome Header */}
-      <section className="flex flex-col md:flex-row md:items-end justify-between gap-6 bg-[#12141f] border border-[#252a3a] rounded-2xl p-6">
+    <div className="mvp-page max-w-6xl">
+      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#e4e6ef] mb-1">Olá, {user.nome.split(' ')[0]}! 👋</h1>
-          <p className="text-[#8b90a5]">Pronto para mais um dia de evolução?</p>
+          <p className="mvp-eyebrow">SEU ESPAÇO DE EVOLUÇÃO</p>
+          <h1 className="mvp-title">
+            Olá, {usuario.nome.split(' ')[0]}
+            <span className="text-[#7c5cfc]">.</span>
+          </h1>
+          <p className="mvp-muted mt-3">
+            Mais um dia para transformar curiosidade em conhecimento.
+          </p>
         </div>
-        
-        <div className="flex flex-wrap items-center gap-6">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-[#7c5cfc]/20 flex items-center justify-center border border-[#7c5cfc]/30">
-              <span className="text-[#7c5cfc] font-bold text-lg">L{user.nivel}</span>
-            </div>
-            <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="text-[#8b90a5]">Nível {user.nivel}</span>
-                <span className="text-[#e4e6ef]">{user.xp} / {user.xpProximoNivel} XP</span>
-              </div>
-              <div className="w-32 bg-[#181b2a] rounded-full h-2">
-                <div className="bg-[#7c5cfc] rounded-full h-2" style={{ width: `${xpPercentage}%` }}></div>
-              </div>
-            </div>
+        <p className="mvp-note">
+          <Sparkles size={16} />
+          Um conceito de cada vez
+        </p>
+      </header>
+      {!armazenamentoDisponivel && (
+        <p className="mvp-note" role="status">
+          O armazenamento local está indisponível. Seu progresso será mantido
+          apenas nesta sessão.
+        </p>
+      )}
+      <section className="mvp-card flex flex-wrap items-center gap-5">
+        <div className="w-12 h-12 rounded-full border-2 border-[#7c5cfc] text-[#a28aff] flex items-center justify-center text-lg font-bold">
+          {usuario.nivel}
+        </div>
+        <div className="flex-1 min-w-40">
+          <h2 className="text-sm font-semibold">
+            Seu aprendizado está evoluindo
+          </h2>
+          <p className="mvp-muted mt-1">
+            Nível {usuario.nivel} · {usuario.xp} de {usuario.xpProximoNivel} XP
+          </p>
+        </div>
+        <div className="w-full sm:w-48 space-y-2">
+          <p className="text-xs text-[#8b90a5]">
+            {Math.max(0, usuario.xpProximoNivel - usuario.xp)} XP para o próximo
+            nível
+          </p>
+          <div className="mvp-progress">
+            <span
+              style={{
+                width: `${Math.min(100, (usuario.xp / usuario.xpProximoNivel) * 100)}%`,
+              }}
+            />
           </div>
-          
-          <div className="h-10 w-px bg-[#252a3a] hidden md:block"></div>
-          
-          <div className="flex items-center gap-2 bg-orange-500/10 text-orange-400 px-4 py-2 rounded-xl border border-orange-500/20">
-            <Flame className="w-5 h-5 fill-current" />
-            <div>
-              <span className="font-bold">{user.sequenciaDias}</span>
-              <span className="text-xs ml-1 opacity-80">dias seguidos</span>
-            </div>
+        </div>
+        <div className="flex items-center gap-2 text-orange-400 sm:border-l border-[#252a3a] sm:pl-5">
+          <Flame size={20} />
+          <div>
+            <strong className="text-sm">{usuario.sequenciaDias} dias</strong>
+            <p className="text-xs text-[#8b90a5]">de constância</p>
           </div>
         </div>
       </section>
-
-      {/* Continue aprendendo (trilha) */}
-      {resumoTrilhaAtual.etapaAtual && (
-        <section className="bg-gradient-to-r from-[#12141f] to-[#181b2a] border border-[#7c5cfc]/30 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-[#7c5cfc]/10 flex items-center justify-center flex-shrink-0">
-              <Route className="w-6 h-6 text-[#7c5cfc]" />
-            </div>
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wider text-[#7c5cfc] mb-1">Continue aprendendo</p>
-              <h2 className="text-[#e4e6ef] font-semibold text-lg">{trilhaAtual.nome}</h2>
-              <p className="text-sm text-[#8b90a5]">
-                Etapa {resumoTrilhaAtual.indiceAtual + 1} de {resumoTrilhaAtual.total} · <span className="text-[#e4e6ef]">{resumoTrilhaAtual.etapaAtual.titulo}</span>
+      <section className="mvp-card flex flex-col md:flex-row md:items-center gap-5 !border-[#7c5cfc]/30 bg-gradient-to-r from-[#12141f] to-[#181b2a]">
+        <span className="mvp-icon">
+          <Route size={26} />
+        </span>
+        <div className="flex-1 space-y-2">
+          <p className="mvp-eyebrow">CONTINUE APRENDENDO</p>
+          <h2 className="text-xl font-semibold">{atual.nome}</h2>
+          <p className="mvp-muted">
+            {resumo.etapaAtual
+              ? `Etapa ${resumo.indiceAtual + 1} de ${resumo.total} · ${resumo.etapaAtual.titulo}`
+              : 'Trilha concluída · você pode revisar os conceitos'}
+          </p>
+          <div className="flex gap-1.5 pt-1">
+            {atual.etapas.map((e) => (
+              <span
+                key={e.id}
+                className={`h-1.5 w-6 rounded-full ${progresso.etapasConcluidas[atual.id]?.includes(e.id) ? 'bg-[#7c5cfc]' : 'bg-[#252a3a]'}`}
+              />
+            ))}
+          </div>
+        </div>
+        <Link
+          className="mvp-button"
+          to={
+            resumo.etapaAtual
+              ? destinoEtapa(atual, resumo.etapaAtual)
+              : `/trilhas/${atual.id}`
+          }
+        >
+          {resumo.etapaAtual ? 'Continuar trilha' : 'Revisar trilha'}
+          <ArrowRight size={16} />
+        </Link>
+      </section>
+      <div className="grid lg:grid-cols-2 gap-6">
+        <section className="space-y-4">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <Target size={19} />
+            Seu nivelamento
+          </h2>
+          <div className="mvp-card space-y-5 h-[calc(100%-2.75rem)]">
+            <div className="flex items-center justify-between gap-3">
+              <span className="mvp-icon">
+                <Code2 size={23} />
+              </span>
+              <p className="mvp-eyebrow">
+                {nivelamento.completed
+                  ? 'DIAGNÓSTICO INICIAL'
+                  : 'SEU PONTO DE PARTIDA'}
               </p>
             </div>
+            <h3 className="text-xl font-semibold">Backend com Python</h3>
+            <p className="mvp-muted">
+              {nivelamento.completed
+                ? 'Seu mapa inicial reúne as evidências desta tentativa.'
+                : 'Descubra seus conhecimentos atuais, sem nota e sem julgamento.'}
+            </p>
+            <div className="border-t border-[#252a3a] pt-4 space-y-3">
+              {nivelamento.completed ? (
+                <>
+                  <p className="mvp-muted">
+                    Trilha recomendada:{' '}
+                    <strong className="text-[#e4e6ef]">
+                      {recomendada.nome}
+                    </strong>
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {recomendacao.lacunas.map((h) => (
+                      <span
+                        key={h.habilidadeId}
+                        className="bg-[#181b2a] rounded px-2 py-1 text-xs text-[#8b90a5]"
+                      >
+                        {habilidadePorId(h.habilidadeId)?.nome}
+                      </span>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p className="mvp-note">
+                  <Clock size={15} />
+                  Cerca de 5 minutos ·{' '}
+                  {nivelamento.answers.length
+                    ? `${nivelamento.answers.length} de 6 respostas registradas`
+                    : '6 questões'}
+                </p>
+              )}
+            </div>
+            <Link className="mvp-link" to={destinoNivelamento}>
+              {nivelamento.completed
+                ? 'Ver resultado'
+                : retomando
+                  ? 'Continuar nivelamento'
+                  : 'Fazer meu nivelamento'}
+              <ArrowRight size={16} />
+            </Link>
           </div>
-          <Link
-            to={destinoEtapa(trilhaAtual, resumoTrilhaAtual.etapaAtual)}
-            className="bg-[#7c5cfc] hover:bg-[#6a4be6] text-white px-5 py-2.5 rounded-lg font-medium transition-colors text-sm flex items-center justify-center gap-2 shadow-lg shadow-[#7c5cfc]/20 whitespace-nowrap"
-          >
-            Continuar trilha <ArrowRight className="w-4 h-4" />
-          </Link>
         </section>
-      )}
-
-      {/* 2. Continuar Praticando */}
-      <section>
-        <div className="flex justify-between items-end mb-5">
-          <div className="flex items-center gap-2">
-            <Code2 className="w-5 h-5 text-[#e4e6ef]" />
-            <h2 className="text-lg font-semibold text-[#e4e6ef]">Continuar Praticando</h2>
-          </div>
-          <Link to="/desafios" className="text-sm text-[#7c5cfc] hover:text-[#6a4be6] flex items-center gap-1 transition-colors">
-            Ver todos <ChevronRight className="w-4 h-4" />
-          </Link>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {recentChallenges.map(challenge => (
-            <div key={challenge.id} className="bg-[#12141f] border border-[#252a3a] rounded-xl p-5 hover:border-[#7c5cfc]/40 transition-colors group">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-[#e4e6ef] font-medium mb-1.5 group-hover:text-[#7c5cfc] transition-colors">{challenge.titulo}</h3>
-                  <div className="flex gap-2">
-                    <span className="bg-[#181b2a] text-[#8b90a5] text-xs px-2.5 py-1 rounded-md">
-                      {challenge.categoria || 'Geral'}
+        <section className="space-y-4">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <Sparkles size={19} />
+            {nivelamento.completed
+              ? 'Mais evidências, novos passos'
+              : 'Um caminho feito para você'}
+          </h2>
+          <div className="mvp-card space-y-5 h-[calc(100%-2.75rem)]">
+            <p className="mvp-muted">
+              {nivelamento.completed
+                ? 'Habilidades que precisam de mais evidências nesta tentativa. O diagnóstico pode evoluir com a prática.'
+                : 'Comece pelo nivelamento ou continue explorando as trilhas. Você escolhe seu ritmo.'}
+            </p>
+            {nivelamento.completed ? (
+              (recomendacao.lacunas.length
+                ? recomendacao.lacunas
+                : recomendacao.mapa
+              )
+                .slice(0, 3)
+                .map((h) => (
+                  <Link
+                    key={h.habilidadeId}
+                    to={`/conceitos/${h.habilidadeId}?trilha=${recomendada.id}`}
+                    className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between py-3 border-b border-[#252a3a]"
+                  >
+                    <span className="text-sm font-medium">
+                      {habilidadePorId(h.habilidadeId)?.nome}
                     </span>
-                    <span className={`text-xs px-2.5 py-1 rounded-md ${getDifficultyStyles(challenge.dificuldade)}`}>
-                      {challenge.dificuldade}
-                    </span>
-                  </div>
-                </div>
-                <div className="w-10 h-10 rounded-lg bg-[#181b2a] flex items-center justify-center text-[#8b90a5]">
-                  <Clock className="w-5 h-5" />
-                </div>
-              </div>
-              <div className="mt-4 pt-4 border-t border-[#252a3a] flex justify-between items-center">
-                <div className="text-xs text-[#8b90a5]">Última tentativa há 2 horas</div>
-                <Link to={`/resolver/${challenge.id}`} className="bg-[#181b2a] hover:bg-[#7c5cfc] hover:text-white text-[#e4e6ef] border border-[#252a3a] hover:border-[#7c5cfc] px-4 py-1.5 rounded-lg text-sm transition-all flex items-center gap-1.5">
-                  Continuar <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Left Column (Arenas & Suggested) */}
-        <div className="lg:col-span-2 space-y-10">
-          
-          {/* 3. Próxima Arena */}
-          {upcomingArena && (
-            <section>
-              <div className="flex justify-between items-end mb-5">
-                <div className="flex items-center gap-2">
-                  <Swords className="w-5 h-5 text-[#e4e6ef]" />
-                  <h2 className="text-lg font-semibold text-[#e4e6ef]">Sua Próxima Arena</h2>
-                </div>
-                <Link to="/arena" className="text-sm text-[#7c5cfc] hover:text-[#6a4be6] flex items-center gap-1 transition-colors">
-                  Todas as Arenas <ChevronRight className="w-4 h-4" />
-                </Link>
-              </div>
-
-              <div className="bg-[#12141f] border border-[#252a3a] rounded-xl p-5 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#7c5cfc]/5 rounded-bl-full pointer-events-none"></div>
-                
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-[#7c5cfc]/10 flex items-center justify-center flex-shrink-0 mt-1">
-                      <Trophy className="w-6 h-6 text-[#7c5cfc]" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-[#e4e6ef] font-semibold text-lg">{upcomingArena.titulo || 'Torneio de Algoritmos'}</h3>
-                        <span className="bg-[#7c5cfc]/20 text-[#7c5cfc] text-[10px] uppercase font-bold px-2 py-0.5 rounded-sm tracking-wider">Inscrito</span>
-                      </div>
-                      <p className="text-[#8b90a5] text-sm mb-3">{upcomingArena.descricao}</p>
-                      <div className="flex items-center gap-4 text-xs text-[#8b90a5]">
-                        <span className="flex items-center gap-1.5 bg-[#181b2a] px-2.5 py-1 rounded-md">
-                          <Clock className="w-3.5 h-3.5" /> Começa em 2 dias
-                        </span>
-                        <span className="flex items-center gap-1.5 bg-[#181b2a] px-2.5 py-1 rounded-md">
-                          <Users className="w-3.5 h-3.5" /> {upcomingArena.participantes || 42} inscritos
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <Link to={`/arena/${upcomingArena.id}/lobby`} className="bg-[#181b2a] hover:bg-[#252a3a] text-[#e4e6ef] border border-[#252a3a] px-5 py-2 rounded-lg transition-colors text-sm font-medium text-center whitespace-nowrap">
-                    Ver Detalhes
+                    <EstadoHabilidade estado={h.estado} />
                   </Link>
-                </div>
+                ))
+            ) : (
+              <div className="space-y-4">
+                <span className="mvp-icon">
+                  <BookOpen size={25} />
+                </span>
+                <h3 className="font-semibold">
+                  Conceitos, desafios e orientação
+                </h3>
+                <p className="mvp-muted">
+                  Cada desafio conecta os conhecimentos necessários aos
+                  conceitos curtos e às dicas progressivas.
+                </p>
               </div>
-            </section>
-          )}
-
-          {/* 5. Desafio Sugerido */}
-          <section>
-            <div className="flex justify-between items-end mb-5">
-              <div className="flex items-center gap-2">
-                <Target className="w-5 h-5 text-[#e4e6ef]" />
-                <h2 className="text-lg font-semibold text-[#e4e6ef]">Desafio Sugerido</h2>
-              </div>
+            )}
+            <p className="mvp-note">
+              Pedir ajuda faz parte do aprendizado, não é uma penalidade.
+            </p>
+            <Link
+              className="mvp-link"
+              to={
+                nivelamento.completed
+                  ? `/trilhas/${recomendada.id}`
+                  : '/trilhas'
+              }
+            >
+              {nivelamento.completed
+                ? 'Abrir trilha recomendada'
+                : 'Explorar trilhas'}
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </section>
+        <section className="space-y-4">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <Code2 size={19} />
+            Desafio recomendado
+          </h2>
+          <div className="mvp-card space-y-4">
+            <div className="flex justify-between gap-3">
+              <p className="mvp-eyebrow">PARA PRATICAR SEU PRÓXIMO PASSO</p>
+              <span
+                className={`text-xs ${desafio.dificuldade === 'Fácil' ? 'text-emerald-400' : desafio.dificuldade === 'Médio' ? 'text-amber-400' : 'text-red-400'}`}
+              >
+                {desafio.dificuldade}
+              </span>
             </div>
-
-            <div className="bg-gradient-to-r from-[#12141f] to-[#181b2a] border border-[#7c5cfc]/30 rounded-xl p-5 hover:border-[#7c5cfc]/60 transition-colors relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-4 opacity-10">
-                <Zap className="w-24 h-24 text-[#7c5cfc]" />
-              </div>
-              
-              <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                  <div className="flex gap-2 mb-2">
-                    <span className="bg-[#7c5cfc]/20 text-[#7c5cfc] text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
-                      <Zap className="w-3 h-3 fill-current" /> Recomendado para seu nível
-                    </span>
-                  </div>
-                  <h3 className="text-[#e4e6ef] font-semibold text-lg mb-1">{suggestedChallenge.titulo || 'Estruturas de Dados Avançadas'}</h3>
-                  <p className="text-[#8b90a5] text-sm">Baseado nos seus últimos desafios resolvidos.</p>
-                </div>
-                
-                <Link to={`/resolver/${suggestedChallenge.id}`} className="bg-[#7c5cfc] hover:bg-[#6a4be6] text-white px-5 py-2.5 rounded-lg font-medium transition-colors text-sm flex items-center gap-2 shadow-lg shadow-[#7c5cfc]/20">
-                  Resolver Agora <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
-          </section>
-
-        </div>
-
-        {/* Right Column (Community Activity) */}
-        <div>
-          {/* 4. Atividade nas suas Comunidades */}
-          <section className="bg-[#12141f] border border-[#252a3a] rounded-xl p-5 h-full">
-            <div className="flex justify-between items-center mb-6">
-              <div className="flex items-center gap-2">
-                <MessageSquare className="w-5 h-5 text-[#e4e6ef]" />
-                <h2 className="text-lg font-semibold text-[#e4e6ef]">Suas Comunidades</h2>
-              </div>
-              <Link to="/comunidades" className="text-sm text-[#7c5cfc] hover:text-[#6a4be6] transition-colors p-1">
-                <ChevronRight className="w-5 h-5" />
+            <h3 className="text-xl font-semibold">{desafio.titulo}</h3>
+            <p className="mvp-muted">
+              Use listas, dicionários e funções para organizar nomes e
+              telefones.
+            </p>
+            <p className="mvp-note">
+              {nivelamento.completed
+                ? 'Pratique as habilidades avaliadas em um desafio da trilha de Python.'
+                : 'Uma sugestão da trilha de Python. Faça o nivelamento para observar seu ponto de partida.'}
+            </p>
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#252a3a]">
+              <span className="text-xs text-[#8b90a5]">
+                Python · Dicionários · Funções
+              </span>
+              <Link className="mvp-link" to={`/desafios/${desafio.id}`}>
+                Ver desafio
+                <ArrowRight size={16} />
               </Link>
             </div>
-
-            <div className="space-y-4">
-              {recentActivity.map((activity, idx) => (
-                <div key={activity.id} className="group">
-                  <div className="flex gap-3">
-                    <div className="w-8 h-8 rounded-full bg-[#181b2a] border border-[#252a3a] flex items-center justify-center flex-shrink-0 text-[#8b90a5]">
-                      <Users className="w-4 h-4" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start mb-0.5">
-                        <span className="text-xs font-medium text-[#e4e6ef] truncate max-w-[150px]">{activity.community}</span>
-                        <span className="text-[10px] text-[#8b90a5]">{activity.time}</span>
-                      </div>
-                      <p className="text-xs text-[#8b90a5] mb-1"><span className="text-[#7c5cfc]">{activity.author}:</span> {activity.message}</p>
-                    </div>
-                  </div>
-                  {idx < recentActivity.length - 1 && <div className="h-px w-full bg-[#252a3a] mt-4"></div>}
-                </div>
-              ))}
-            </div>
-
-            <Link to="/comunidades" className="block w-full text-center mt-6 py-2 bg-[#181b2a] hover:bg-[#252a3a] text-[#e4e6ef] text-sm rounded-lg border border-[#252a3a] transition-colors">
-              Ver todas as mensagens
-            </Link>
-          </section>
-        </div>
-
+          </div>
+        </section>
+        <section className="space-y-4">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <Clock size={19} />
+            Atividade recente
+          </h2>
+          <div className="mvp-card !py-2 divide-y divide-[#252a3a]">
+            {atividades.slice(0, 3).map((a) => (
+              <Link
+                key={a.id}
+                to={a.destino}
+                className="flex items-center gap-4 py-4 hover:text-[#a28aff]"
+              >
+                <span className="mvp-icon !w-9 !h-9 shrink-0">
+                  {a.tipo === 'desafio' ? (
+                    <Code2 size={16} />
+                  ) : a.tipo === 'nivelamento' ? (
+                    <Target size={16} />
+                  ) : (
+                    <BookOpen size={16} />
+                  )}
+                </span>
+                <span className="text-sm">{a.text}</span>
+                <ArrowRight size={14} className="ml-auto shrink-0" />
+              </Link>
+            ))}
+          </div>
+        </section>
       </div>
+      <footer className="mvp-footer">
+        Liberdade para explorar, orientação para não se perder.
+      </footer>
     </div>
   );
 }

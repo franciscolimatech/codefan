@@ -32,3 +32,6 @@ dist-ssr
 .vercel
 
 .claude/
+
+# Capturas da validação no navegador
+test-results/

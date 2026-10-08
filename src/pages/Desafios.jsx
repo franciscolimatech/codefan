@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, Filter, Check, ChevronDown, Code2, Zap } from 'lucide-react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { Search, Filter, Check, Zap } from 'lucide-react';
 import { desafios } from '../data/mockData';
+import { useProgresso } from '../context/ProgressoContext';
 
 export default function Desafios() {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [params] = useSearchParams();
+  const { progresso } = useProgresso();
+  const [searchTerm, setSearchTerm] = useState(params.get('busca') || '');
   const [category, setCategory] = useState('Todos');
   const [difficulty, setDifficulty] = useState('Todos');
   const [showResolved, setShowResolved] = useState(false);
@@ -19,7 +22,7 @@ export default function Desafios() {
     const matchSearch = (d.titulo?.toLowerCase().includes(searchTerm.toLowerCase()) || d.descricao?.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchCat = category === 'Todos' || d.categoria === category;
     const matchDiff = difficulty === 'Todos' || d.dificuldade === difficulty;
-    const matchResolved = showResolved ? true : !d.resolvido;
+    const matchResolved = showResolved ? true : !progresso.desafiosResolvidos.includes(d.id);
     return matchSearch && matchCat && matchDiff && matchResolved;
   });
 
@@ -122,7 +125,7 @@ export default function Desafios() {
                       {desafio.dificuldade}
                     </span>
                   </div>
-                  {desafio.resolvido && <Check className="w-5 h-5 text-emerald-400" />}
+                  {progresso.desafiosResolvidos.includes(desafio.id) && <Check className="w-5 h-5 text-emerald-400" />}
                 </div>
                 
                 <h3 className="text-lg font-semibold text-[#e4e6ef] mb-2">{desafio.titulo}</h3>

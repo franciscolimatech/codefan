@@ -3,8 +3,6 @@ import { Link, useLocation, Outlet } from 'react-router-dom';
 import {
   Home,
   Code2,
-  Users,
-  Swords,
   User,
   ChevronLeft,
   ChevronRight,
@@ -18,15 +16,15 @@ import {
   Zap,
   Flame,
   Route,
+  Target,
 } from 'lucide-react';
-import { currentUser } from '../../data/mockData';
+import { useProgresso } from '../../context/ProgressoContext';
 
 const navItems = [
   { path: '/', label: 'Início', icon: Home },
-  { path: '/desafios', label: 'Desafios', icon: Code2 },
+  { path: '/nivelamento', label: 'Nivelamento', icon: Target },
   { path: '/trilhas', label: 'Trilhas', icon: Route },
-  { path: '/comunidades', label: 'Comunidades', icon: Users },
-  { path: '/arena', label: 'Arena', icon: Swords },
+  { path: '/desafios', label: 'Desafios', icon: Code2 },
   { path: '/perfil', label: 'Perfil', icon: User },
 ];
 
@@ -36,6 +34,7 @@ const navSecondary = [
 
 export default function Layout() {
   const location = useLocation();
+  const { usuario: currentUser, nivelamento, recomendacao } = useProgresso();
   const [collapsed, setCollapsed] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -47,7 +46,7 @@ export default function Layout() {
     return location.pathname.startsWith(path);
   };
 
-  const xpPercent = Math.round((currentUser.xp / currentUser.xpProximoNivel) * 100);
+  const xpPercent = Math.min(100, Math.round((currentUser.xp / currentUser.xpProximoNivel) * 100));
 
   return (
     <div className="flex h-screen bg-[#0b0d14] overflow-hidden">
@@ -86,12 +85,14 @@ export default function Layout() {
             </div>
           )}
           <button
+            aria-label={collapsed ? "Expandir menu" : "Recolher menu"}
             onClick={() => setCollapsed(!collapsed)}
             className="hidden lg:flex items-center justify-center w-7 h-7 rounded-md hover:bg-[#181b2a] text-[#8b90a5] transition-colors"
           >
             {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
           <button
+            aria-label="Fechar menu"
             onClick={() => setMobileMenuOpen(false)}
             className="lg:hidden flex items-center justify-center w-7 h-7 rounded-md hover:bg-[#181b2a] text-[#8b90a5]"
           >
@@ -100,7 +101,7 @@ export default function Layout() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        <nav aria-label="Navegação principal" className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
@@ -178,11 +179,12 @@ export default function Layout() {
       </aside>
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
         {/* Top bar */}
         <header className="h-16 border-b border-[#252a3a] bg-[#0b0d14] flex items-center justify-between px-4 lg:px-6 flex-shrink-0">
           <div className="flex items-center gap-4">
             <button
+              aria-label="Abrir menu"
               onClick={() => setMobileMenuOpen(true)}
               className="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg hover:bg-[#181b2a] text-[#8b90a5] transition-colors"
             >
@@ -193,8 +195,9 @@ export default function Layout() {
             <div className="hidden sm:flex items-center gap-2 bg-[#12141f] border border-[#252a3a] rounded-lg px-3.5 py-2 w-72 focus-within:border-[#7c5cfc] transition-colors">
               <Search className="w-4 h-4 text-[#555a6e]" />
               <input
+                onKeyDown={e => { if (e.key === 'Enter' && e.target.value.trim()) window.location.assign(`/desafios?busca=${encodeURIComponent(e.target.value.trim())}`); }}
                 type="text"
-                placeholder="Buscar desafios, comunidades..."
+                placeholder="Buscar desafios..."
                 className="bg-transparent text-sm text-[#e4e6ef] placeholder-[#555a6e] outline-none w-full"
               />
             </div>
@@ -210,6 +213,7 @@ export default function Layout() {
             {/* Notifications */}
             <div className="relative">
               <button
+                aria-label="Notificações"
                 onClick={() => {
                   setShowNotifications(!showNotifications);
                   setShowUserMenu(false);
@@ -220,23 +224,15 @@ export default function Layout() {
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#7c5cfc] rounded-full" />
               </button>
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 bg-[#12141f] border border-[#252a3a] rounded-xl shadow-2xl z-50 overflow-hidden">
+                <div className="absolute right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-[#12141f] border border-[#252a3a] rounded-xl shadow-2xl z-50 overflow-hidden">
                   <div className="p-4 border-b border-[#252a3a]">
                     <h3 className="text-sm font-semibold text-[#e4e6ef]">Notificações</h3>
                   </div>
-                  <div className="max-h-80 overflow-y-auto">
-                    <div className="p-3 hover:bg-[#181b2a] border-b border-[#252a3a]/50 cursor-pointer">
-                      <p className="text-sm text-[#e4e6ef]">Arena "Desafio Semanal #14" começa amanhã!</p>
-                      <p className="text-xs text-[#8b90a5] mt-1">Há 1 hora</p>
-                    </div>
-                    <div className="p-3 hover:bg-[#181b2a] border-b border-[#252a3a]/50 cursor-pointer">
-                      <p className="text-sm text-[#e4e6ef]">Novo material em Backend com Java</p>
-                      <p className="text-xs text-[#8b90a5] mt-1">Há 3 horas</p>
-                    </div>
-                    <div className="p-3 hover:bg-[#181b2a] cursor-pointer">
-                      <p className="text-sm text-[#e4e6ef]">Mariana respondeu sua mensagem</p>
-                      <p className="text-xs text-[#8b90a5] mt-1">Há 5 horas</p>
-                    </div>
+                  <div className="p-4 space-y-4">
+                    <Link to={nivelamento.completed ? '/nivelamento/resultado' : '/nivelamento'} onClick={() => setShowNotifications(false)} className="block text-sm text-[#e4e6ef]">
+                      {nivelamento.completed ? 'Seu resultado de nivelamento está disponível.' : 'Descubra seu ponto de partida no nivelamento.'}
+                    </Link>
+                    <Link to={`/trilhas/${recomendacao.trilhaId}`} onClick={() => setShowNotifications(false)} className="block text-sm text-[#8b90a5]">Continue aprendendo em Fundamentos de Python.</Link>
                   </div>
                 </div>
               )}
@@ -245,6 +241,7 @@ export default function Layout() {
             {/* User menu */}
             <div className="relative">
               <button
+                aria-label="Menu do usuário"
                 onClick={() => {
                   setShowUserMenu(!showUserMenu);
                   setShowNotifications(false);
@@ -302,6 +299,7 @@ export default function Layout() {
 
         {/* Page content */}
         <main
+          key={location.pathname}
           className="flex-1 overflow-y-auto bg-[#0b0d14]"
           onClick={() => {
             setShowNotifications(false);

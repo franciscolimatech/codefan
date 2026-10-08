@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Play, Eye, EyeOff, User, BarChart3, Code2, Tag, Zap, Clock, CheckCircle2, Compass, GraduationCap, Route, Circle, X } from 'lucide-react';
+import { ArrowLeft, Play, Eye, EyeOff, User, BarChart3, Tag, Zap, CheckCircle2, Compass, GraduationCap, Route, Circle, X } from 'lucide-react';
 import { getDesafio, trilhasDoDesafio } from '../data/mockData';
 import { habilidadePorId } from '../data/aprendizagem';
 import { useProgresso } from '../context/ProgressoContext';
@@ -44,7 +44,7 @@ export default function DesafioDetalhe() {
   const idDesafio = source.id || id;
 
   return (
-    <div className="min-h-screen bg-[#0b0d14] p-8">
+    <div className="min-h-screen bg-[#0b0d14] p-4 sm:p-8">
       <div className="max-w-6xl mx-auto space-y-6">
         <Link to="/desafios" className="inline-flex items-center text-sm text-[#8b90a5] hover:text-[#e4e6ef] transition-colors">
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -71,7 +71,7 @@ export default function DesafioDetalhe() {
                 <h1 className="text-3xl font-bold text-[#e4e6ef]">{details.title || 'Desafio de Código'}</h1>
                 <span className="flex items-center gap-1.5 text-xs font-medium text-[#8b90a5] bg-[#181b2a] border border-[#252a3a] px-2.5 py-1 rounded-full">
                   <GraduationCap className="w-3.5 h-3.5" />
-                  Treinamento
+                  Treinamento demonstrativo
                 </span>
               </div>
 
@@ -244,7 +244,7 @@ export default function DesafioDetalhe() {
               </ul>
               <div className="flex items-center gap-2 text-xs text-[#8b90a5] bg-[#181b2a] p-3 rounded-lg border border-[#252a3a]">
                 <EyeOff className="w-4 h-4 shrink-0" />
-                <p>Este desafio possui <strong>{details.testesOcultos || 3} testes ocultos</strong> que serão avaliados na submissão.</p>
+                <p>Este desafio possui <strong>{details.testesOcultos ?? 0} testes ocultos</strong> previstos. A correção neste MVP é simulada; o Judge real ainda não está integrado.</p>
               </div>
             </div>
 

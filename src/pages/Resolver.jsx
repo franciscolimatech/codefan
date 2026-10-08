@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Play, Send, Clock, ChevronDown, Terminal, Eye, EyeOff, CheckCircle2, XCircle, FileCode, X, Loader2, Zap, Compass, GraduationCap } from 'lucide-react';
+import { ArrowLeft, Play, Send, Clock, ChevronDown, Terminal, Eye, EyeOff, CheckCircle2, XCircle, FileCode, X, Loader2, Compass, GraduationCap } from 'lucide-react';
 import { getDesafio } from '../data/mockData';
 import { habilidadePorId } from '../data/aprendizagem';
 import { useProgresso } from '../context/ProgressoContext';
@@ -56,10 +56,10 @@ export default function Resolver() {
   const handleRun = () => {
     setIsRunning(true);
     setIsOutputOpen(true);
-    setOutput('Executando código...');
+    setOutput('Preparando demonstração de execução...');
 
     setTimeout(() => {
-      setOutput('> Testes visíveis passados com sucesso.\n> Tempo de execução: 42ms\n> Memória: 24MB\n\nPronto para submissão!');
+      setOutput('> Execução simulada: nenhum código foi executado.\n> Os casos de teste acima são exemplos para orientar sua solução.\n> O Judge real ainda não está integrado.');
       setIsRunning(false);
     }, 1500);
   };
@@ -69,7 +69,8 @@ export default function Resolver() {
 
     setTimeout(() => {
       setIsRunning(false);
-      const isSuccess = Math.random() > 0.3; // 70% chance of success
+      // Apenas registra prática demonstrativa; não avalia a solução.
+      const isSuccess = Boolean(code.trim()) && code.trim() !== (details.codigoInicial || '// Escreva seu código aqui\n').trim();
       if (isSuccess) registrarDesafio(details.id);
       setSubmissionStatus(isSuccess ? 'success' : 'error');
       setShowModal(true);
@@ -83,7 +84,7 @@ export default function Resolver() {
   return (
     <div className="h-screen flex flex-col bg-[#0b0d14] overflow-hidden font-sans">
       {/* Top Bar */}
-      <header className="h-14 bg-[#12141f] border-b border-[#252a3a] flex items-center justify-between px-4 shrink-0">
+      <header className="min-h-14 bg-[#12141f] border-b border-[#252a3a] flex flex-wrap items-center justify-between gap-3 px-4 py-2 shrink-0">
         <div className="flex items-center gap-4">
           <Link to={`/desafios/${details.id || 'd2'}`} className="text-[#8b90a5] hover:text-[#e4e6ef] transition-colors">
             <ArrowLeft className="w-5 h-5" />
@@ -96,7 +97,7 @@ export default function Resolver() {
             </span>
             <span className="flex items-center gap-1.5 text-[#8b90a5] bg-[#181b2a] border border-[#252a3a] text-xs px-2 py-0.5 rounded-full font-medium">
               <GraduationCap className="w-3 h-3" />
-              Treinamento
+              Simulação de treinamento
             </span>
           </h1>
         </div>
@@ -113,7 +114,7 @@ export default function Resolver() {
             className="flex items-center gap-2 bg-[#181b2a] hover:bg-[#252a3a] text-[#e4e6ef] border border-[#252a3a] px-4 py-1.5 rounded-md transition-colors text-sm font-medium"
           >
             {isRunning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 text-emerald-400" />}
-            Executar
+            Simular execução
           </button>
 
           <button
@@ -122,16 +123,17 @@ export default function Resolver() {
             className="flex items-center gap-2 bg-[#7c5cfc] hover:bg-[#6a4be6] text-white px-4 py-1.5 rounded-md transition-colors text-sm font-medium"
           >
             <Send className="w-4 h-4" />
-            Submeter
+            Simular submissão
           </button>
         </div>
       </header>
 
+      <p className="px-4 py-2 text-xs text-amber-300 bg-amber-400/5 border-b border-[#252a3a]">Judge demonstrativo: execução e correção simuladas. A submissão registra prática local, sem validar o código.</p>
       {/* Main Split Area */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
 
         {/* LEFT PANEL */}
-        <div className="w-[40%] flex flex-col border-r border-[#252a3a] bg-[#12141f]">
+        <div className="w-full md:w-[40%] min-h-80 md:min-h-0 flex flex-col shrink-0 border-r border-[#252a3a] bg-[#12141f]">
           <div className="flex border-b border-[#252a3a]">
             {['Enunciado', 'Testes', 'Dicas'].map(tab => (
               <button
@@ -155,7 +157,7 @@ export default function Resolver() {
             </div>
           )}
 
-          <div className="flex items-center justify-between gap-3 px-6 py-2.5 border-b border-[#252a3a]">
+          <div className="flex items-center justify-between gap-3 px-4 py-2.5 border-b border-[#252a3a]">
             <span className="text-xs text-[#8b90a5]">Travado? Sem problema.</span>
             <button
               onClick={() => setOrientacaoAberta(true)}
@@ -166,7 +168,7 @@ export default function Resolver() {
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar">
             {activeTab === 'Enunciado' && (
               <div className="space-y-6">
                 <div>
@@ -210,7 +212,7 @@ export default function Resolver() {
 
                 <div className="border border-dashed border-[#252a3a] bg-[#0b0d14] p-4 rounded-lg flex items-center justify-center gap-3 opacity-60">
                   <EyeOff className="w-5 h-5 text-[#8b90a5]" />
-                  <span className="text-sm text-[#8b90a5]">{details.testesOcultos || 3} Casos de teste ocultos</span>
+                  <span className="text-sm text-[#8b90a5]">{details.testesOcultos ?? 0} Casos de teste ocultos</span>
                 </div>
               </div>
             )}
@@ -226,7 +228,7 @@ export default function Resolver() {
         </div>
 
         {/* RIGHT PANEL - EDITOR & TERMINAL */}
-        <div className="w-[60%] flex flex-col bg-[#0d1117]">
+        <div className="w-full md:w-[60%] min-h-[480px] md:min-h-0 flex flex-col shrink-0 bg-[#0d1117]">
           {/* Editor Header */}
           <div className="h-10 bg-[#12141f] border-b border-[#252a3a] flex items-center justify-between px-2 shrink-0">
             <div className="flex items-center h-full">
@@ -265,6 +267,7 @@ export default function Resolver() {
                 setCode(e.target.value);
                 salvarRascunho(details.id, e.target.value);
               }}
+              aria-label="Editor de código"
               spellCheck="false"
               className="flex-1 w-full h-full bg-transparent text-[#e4e6ef] font-mono text-sm p-4 leading-6 resize-none focus:outline-none whitespace-pre"
               style={{ tabSize: 2 }}
@@ -286,7 +289,7 @@ export default function Resolver() {
 
             {isOutputOpen && (
               <div className="flex-1 p-4 overflow-y-auto bg-[#0b0d14] font-mono text-sm text-[#a3a8b8] whitespace-pre-wrap">
-                {output || 'Nenhuma execução recente. Clique em "Executar" para testar seu código.'}
+                {output || 'Nenhuma execução recente. Use "Simular execução" para conhecer o fluxo demonstrativo.'}
               </div>
             )}
           </div>
@@ -310,28 +313,10 @@ export default function Resolver() {
                   <div className="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center mb-6">
                     <CheckCircle2 className="w-10 h-10 text-emerald-400" />
                   </div>
-                  <h2 className="text-2xl font-bold text-[#e4e6ef] mb-2">Desafio Aceito!</h2>
-                  <p className="text-[#8b90a5] mb-6">Parabéns! Sua solução passou em todos os testes.</p>
+                  <h2 className="text-2xl font-bold text-[#e4e6ef] mb-2">Prática demonstrativa registrada</h2>
+                  <p className="text-[#8b90a5] mb-6">Seu rascunho foi registrado nesta demonstração. O código não foi executado nem corrigido.</p>
 
-                  <div className="w-full bg-[#181b2a] border border-[#252a3a] rounded-lg p-4 mb-8 flex justify-around">
-                    <div className="text-center">
-                      <div className="text-sm text-[#8b90a5] mb-1">Tempo</div>
-                      <div className="text-[#e4e6ef] font-mono">42ms</div>
-                    </div>
-                    <div className="w-px bg-[#252a3a]"></div>
-                    <div className="text-center">
-                      <div className="text-sm text-[#8b90a5] mb-1">Memória</div>
-                      <div className="text-[#e4e6ef] font-mono">24MB</div>
-                    </div>
-                    <div className="w-px bg-[#252a3a]"></div>
-                    <div className="text-center">
-                      <div className="text-sm text-[#8b90a5] mb-1">XP Ganho</div>
-                      <div className="text-[#7c5cfc] font-bold flex items-center justify-center gap-1">
-                        <Zap className="w-4 h-4" />
-                        {details.xp || 150}
-                      </div>
-                    </div>
-                  </div>
+                  <p className="text-sm text-[#8b90a5] mb-6">Recompensa demonstrativa: {details.xp || 0} XP, concedidos uma única vez por desafio.</p>
 
                   {(details.habilidades || []).length > 0 && (
                     <p className="text-xs text-[#8b90a5] mb-6 -mt-2">
@@ -350,8 +335,8 @@ export default function Resolver() {
                   <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center mb-6">
                     <XCircle className="w-10 h-10 text-red-400" />
                   </div>
-                  <h2 className="text-2xl font-bold text-[#e4e6ef] mb-2">Resposta Incorreta</h2>
-                  <p className="text-[#8b90a5] mb-6">Sua solução falhou em 2 testes ocultos.</p>
+                  <h2 className="text-2xl font-bold text-[#e4e6ef] mb-2">Rascunho ainda não alterado</h2>
+                  <p className="text-[#8b90a5] mb-6">Escreva ou altere seu rascunho para registrar a prática demonstrativa. Não avaliamos se a solução está correta.</p>
 
                   <button
                     onClick={() => setShowModal(false)}

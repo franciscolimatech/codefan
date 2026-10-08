@@ -1,5 +1,9 @@
 // Estados qualitativos de habilidade (sem porcentagens).
 export const ESTADO_META = {
+  nao_demonstrado: {
+    label: 'NÃO DEMONSTRADO', nivel: 0,
+    classe: 'text-[#8b90a5] bg-[#181b2a] border-[#252a3a]', segmento: 'bg-[#8b90a5]',
+  },
   nao_praticado: {
     label: 'NÃO PRATICADO',
     nivel: 0,
