@@ -1,40 +1,57 @@
-# Python:
-    Instalação: https://www.python.org/downloads/ Versões: (">=3.13,<4.0")
-# Pipx
-    É uma ferramenta feita para instalar e rodar aplicações em Python que vêm de forma de linha de comando(CLI) de maneira isolada.
+# Requisitos e Instalação
+## Python
+- Versão necessária: >=3.13,<4.0
+- Download: https://www.python.org/downloads/ 
 
-    ## Instalar poetry via pipx:
-    '''
-        pipx install poetry
-    '''
-# O que é o Poetry
-    O poetry é uma ferramenta moderna de gerenciamento de dependência e empacotamento para projetos em Python. Ele resolve problemas antigos do ecossistema Python(como o uso fragmentado do pip, requirements.txt e ambientes virtuais manuais venv) centralizando tudo em uma única ferramenta.
+## Pipx
+É uma ferramenta feita para instalar e rodar aplicações em Python que vêm de forma de linha de comando(CLI) de maneira isolada.
+```bash
+pip install pipx
+```
 
-    ## Poetry Shell:
-        Terminal interativo do poetry, com ele não precisamos digitar poetry run ... pra cada comando usado.
+## Poetry
+O poetry é uma ferramenta moderna de gerenciamento de dependência e empacotamento para projetos em Python. Ele resolve problemas antigos do ecossistema Python(como o uso fragmentado do pip, requirements.txt e ambientes virtuais manuais venv) centralizando tudo em uma única ferramenta.
+
+### Instalar poetry via pipx:
+```bash
+pipx install poetry
+```
+
+# Configuração de Ambiente
+## Ativando o Poetry Shell:
+Terminal interativo do poetry, com ele não precisamos digitar poetry run ... pra cada comando usado.
     
-        '''
-        poetry self add poetry-plugin-shell
+```bash
+poetry self add poetry-plugin-shell
+```
+## Ativa o ambiente:
+```bash
+poetry shell
+```
+### Instalação das dependências
+```bash
+poetry install
+```
 
-        poetry shell
-        '''
-    ## Instalação das dependências
-    '''
-        poetry install
-    '''
+## Ferramentas de produtividade:
+O projeto utiliza duas ferramentas modernas para garantir a qualidade do código e facilitar a rotina de comandos:
 
-# Ruff e Taskipy:
-    O Ruff e o Taskipy são ferramentas modernas usadas para melhorar a produtividade e a qualidade do código em projetos Python. Aqui está a explicação de cada uma delas:
+- Ruff: Um linter e formatador de código extremamente rápido, escrito em Rust.
+- Taskipy: Um gerenciador de tarefas leve que simplifica a execução de comandos longos no terminal.
 
-    - O ruff é um linter e formatador de código extremamente rápido, escrito na linguagem Rust.
-    - O Taskipy é um gerenciador de tarefas leve e simples para Python.
+## Comandos Úteis(Taskipy & Django):
+### Formatação e Qualidade:
 
-## Comandos usados nas tarefas(Formatação & Django) via 'poetry shell':
-    - task lint: Ele procura por erros de sintaxe/bugs, e verifica se a formatação está dentro do padrão, sem alterar nada no arquivo.
-    - task format: Após a varredura do lint, o format corrige os erros que consegue sozinho e organiza os imports, além de reformatar todo o código, deixando mais limpo e padronizado.
-    - task dev: Sobe a aplicação Django via localhost.
-    - task makemigrations: Verifica as alterações na ORM do banco de dados(sem aplicar).
-    - task migrate: Aplica as migrações no banco de dados.
-    - task shell: Entra no terminal interativo Django.
+- task lint: Procura por erros de sintaxe ou bugs e verifica se a formatação segue o padrão do projeto, sem alterar nenhum arquivo.
+- task format: Corrige automaticamente os erros que consegue, organiza os imports e reformata todo o código para deixá-lo limpo e padronizado.
 
+### Banco de Dados(Django ORM)
 
+- task makemigrations: Identifica e mapeia as alterações feitas nos modelos do banco de dados (sem aplicá-las ainda).
+- task migrate: Aplica efetivamente as migrações pendentes no banco de dados.
+
+### Execução e Testes
+
+- task dev: Inicia o servidor de desenvolvimento local do Django (localhost).
+- task shell: Abre o terminal interativo do Django para testar códigos e consultas diretamente no contexto da aplicação.
+- task test: Roda a suíte de testes automatizados usando o Pytest.

@@ -22,6 +22,7 @@ build-backend = "poetry.core.masonry.api"
 dev = [
     "ruff (>=0.17.0,<0.18.0)",
     "taskipy (>=1.14.1,<2.0.0)",
+    "pytest (>=9.1.1,<10.0.0)",
 ]
 
 [tool.ruff]
@@ -41,7 +42,8 @@ ignore = []
 [tool.taskipy.tasks]
 lint = "ruff check . && ruff format --check ."
 format = "ruff check --fix . && ruff format ."
-dev = "python manage.py runserver"
-makemigrations = "python manage.py makemigrations"
-migrate = "python manage.py migrate"
-shell = "python manage.py shell"
+dev = "poetry run python manage.py runserver"
+makemigrations = "poetry run python manage.py makemigrations"
+migrate = "poetry run python manage.py migrate"
+shell = "poetry run python manage.py shell"
+test = "poetry run pytest"
