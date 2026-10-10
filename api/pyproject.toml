@@ -1,0 +1,47 @@
+[project]
+name = "api"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "SenhorDosSonhos1",email = "marcelosamu2002@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13,<4.0"
+dependencies = [
+    "django (>=6.1.2,<7.0.0)",
+    "djangorestframework (>=3.18.3,<4.0.0)",
+    "psycopg2-binary (>=2.9.13,<3.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "ruff (>=0.17.0,<0.18.0)",
+    "taskipy (>=1.14.1,<2.0.0)",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",  
+    "F",  
+    "I",  
+    "B",  
+    "C4", 
+]
+ignore = []
+
+[tool.taskipy.tasks]
+lint = "ruff check . && ruff format --check ."
+format = "ruff check --fix . && ruff format ."
+dev = "python manage.py runserver"
+makemigrations = "python manage.py makemigrations"
+migrate = "python manage.py migrate"
+shell = "python manage.py shell"
