@@ -35,3 +35,80 @@ dist-ssr
 
 # Capturas da validação no navegador
 test-results/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Ambientes Virtuais (Virtual Environments)
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Configurações de IDEs e Editores
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Banco de dados local (SQLite)
+*.sqlite3
+db.sqlite3
+
+# Arquivos de mídia e estáticos coletados (Uploads do usuário)
+media/
+staticfiles/
+static_cdn/
+
+# Logs e arquivos de runtime
+*.log
+pip-log.txt
+cherrypy.log
+
+# Arquivos de variáveis de ambiente (Segredos e senhas)
+.env
+.env.local
+.env.*
+!.env.example
+
+# Relatórios de testes e cobertura (Pytest / Coverage)
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.pytest_cache/
+
+# Pacotes e Distribuição (Se criar pacotes do projeto)
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Sistema Operacional
+.DS_Store
+Thumbs.db
