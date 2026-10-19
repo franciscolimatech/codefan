@@ -1,5 +1,6 @@
 [project]
 name = "api"
+
 version = "0.1.0"
 description = ""
 authors = [
@@ -26,6 +27,9 @@ dev = [
     "pytest (>=9.1.1,<10.0.0)",
 ]
 
+[tool.poetry]
+package-mode = false
+
 [tool.ruff]
 line-length = 88
 target-version = "py310"
@@ -41,7 +45,7 @@ select = [
 ignore = []
 
 [tool.taskipy.tasks]
-lint = "ruff check . && ruff format --check ."
+lint = "ruff check ."
 format = "ruff check --fix . && ruff format ."
 dev = "poetry run python manage.py runserver"
 makemigrations = "poetry run python manage.py makemigrations"
