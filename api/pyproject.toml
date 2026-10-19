@@ -25,6 +25,7 @@ dev = [
     "ruff (>=0.17.0,<0.18.0)",
     "taskipy (>=1.14.1,<2.0.0)",
     "pytest (>=9.1.1,<10.0.0)",
+    "pytest-django (>=4.14.0,<5.0.0)",
 ]
 
 [tool.poetry]
@@ -45,10 +46,13 @@ select = [
 ignore = []
 
 [tool.taskipy.tasks]
-lint = "ruff check ."
+lint = "ruff check . && ruff format --check ."
 format = "ruff check --fix . && ruff format ."
 dev = "poetry run python manage.py runserver"
 makemigrations = "poetry run python manage.py makemigrations"
 migrate = "poetry run python manage.py migrate"
 shell = "poetry run python manage.py shell"
 test = "poetry run pytest"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"

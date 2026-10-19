@@ -1,3 +1,4 @@
+
 """
 Django settings for config project.
 
@@ -11,7 +12,6 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 import os
-import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -19,12 +19,10 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv(BASE_DIR / ".env")        
+load_dotenv(BASE_DIR / ".env")
 load_dotenv(BASE_DIR.parent / ".env")
 
-
-IS_TESTING = "test" in sys.argv or "pytest" in sys.modules
-# Quick-start development settings - unsuitable for production
+# Quick-start development settings - unsuitable for production.
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -45,9 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #APPs
+    # APPs
 
-    #API
+    # API
     'rest_framework',
 ]
 
@@ -83,28 +81,17 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
-if IS_TESTING:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv("POSTGRES_DB_TEST"),
-            'USER': os.getenv("POSTGRES_USER"),
-            'PASSWORD': os.getenv("POSTGRES_PASSWORD"),
-            'HOST': os.getenv("POSTGRES_HOST"),
-            'PORT': os.getenv("POSTGRES_PORT"),
-        }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv("POSTGRES_DB"),
+        'USER': os.getenv("POSTGRES_USER"),
+        'PASSWORD': os.getenv("POSTGRES_PASSWORD"),
+        'HOST': os.getenv("POSTGRES_HOST"),
+        'PORT': os.getenv("POSTGRES_PORT"),
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv("POSTGRES_DB"),
-            'USER': os.getenv("POSTGRES_USER"),
-            'PASSWORD': os.getenv("POSTGRES_PASSWORD"),
-            'HOST': os.getenv("POSTGRES_HOST"),
-            'PORT': os.getenv("POSTGRES_PORT"),
-        }
-    }
+}
 
 
 # Password validation
@@ -127,7 +114,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/6.1/topics/i18n/
 
 LANGUAGE_CODE = 'pt-BR'
 
@@ -139,13 +125,11 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
 
 
 # Email
-# https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
 MAILERS = {
     'default': {
