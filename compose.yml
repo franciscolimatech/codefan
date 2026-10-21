@@ -11,5 +11,20 @@ services:
     volumes:
       - codefan_postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: codefan_api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_HOST: database
+      POSTGRES_PORT: "5432"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
+    depends_on:
+      - database
 volumes:
   codefan_postgres_data:
