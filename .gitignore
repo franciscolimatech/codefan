@@ -112,3 +112,7 @@ wheels/
 # Sistema Operacional
 .DS_Store
 Thumbs.db
+
+.aws
+.codex
+.agents
