@@ -1,57 +1,110 @@
-# Requisitos e Instalação
-## Python
-- Versão necessária: >=3.13,<4.0
-- Download: https://www.python.org/downloads/ 
+# CodeFan — API
 
-## Pipx
-É uma ferramenta feita para instalar e rodar aplicações em Python que vêm de forma de linha de comando(CLI) de maneira isolada.
+Estrutura inicial Django com Django REST Framework e PostgreSQL. Atualmente apenas `admin/` está registrada; ainda não há endpoints de domínio ou integração com o frontend. Consulte a [arquitetura](../docs/ARQUITETURA.md).
+
+## Requisitos
+
+- Python 3.13 (o manifesto aceita `>=3.13,<4.0`; Docker e CI usam 3.13).
+- Poetry 2.5.1 para reproduzir a versão do Docker e do CI.
+- PostgreSQL 16, disponível pelo Compose, ou instância local compatível.
+- Docker com Compose para o caminho em contêineres.
+
+Para instalar Poetry com pipx, caso essas ferramentas ainda não estejam disponíveis:
+
 ```bash
-pip install pipx
+python3 -m pip install --user pipx
+python3 -m pipx ensurepath
+pipx install poetry==2.5.1
 ```
 
-## Poetry
-O poetry é uma ferramenta moderna de gerenciamento de dependência e empacotamento para projetos em Python. Ele resolve problemas antigos do ecossistema Python(como o uso fragmentado do pip, requirements.txt e ambientes virtuais manuais venv) centralizando tudo em uma única ferramenta.
+Após atualizar o PATH, abra outro terminal se necessário. Os comandos abaixo usam `poetry run`; não é necessário instalar o plugin `poetry shell`.
 
-### Instalar poetry via pipx:
+## Variáveis de ambiente
+
+Na raiz do repositório, crie `.env` a partir de `.env.example` **somente se ainda não existir**, e preencha os valores para seu ambiente local:
+
 ```bash
-pipx install poetry
+cp -n .env.example .env
 ```
 
-# Configuração de Ambiente
-## Ativando o Poetry Shell:
-Terminal interativo do poetry, com ele não precisamos digitar poetry run ... pra cada comando usado.
-    
+| Variável | Uso |
+| --- | --- |
+| `SECRET_KEY` | Chave do Django; gere um valor próprio e não o versione. |
+| `DEBUG` | Apenas o texto `True` ativa debug; use `False` fora do desenvolvimento. |
+| `DJANGO_ALLOWED_HOSTS` | Hosts separados por vírgula; padrão `localhost,127.0.0.1`. |
+| `POSTGRES_USER` | Usuário do banco. |
+| `POSTGRES_PASSWORD` | Senha do banco local. |
+| `POSTGRES_DB` | Nome do banco. |
+| `POSTGRES_PORT` | Porta publicada do PostgreSQL no host, por exemplo `5432`. |
+| `POSTGRES_HOST` | Para API executada no host, adicione `127.0.0.1` ao `.env`; esta chave não está no exemplo atual. |
+
+O Django lê `api/.env` e depois `.env` da raiz, sem sobrescrever variáveis já definidas. Prefira um único arquivo na raiz para evitar configurações divergentes. No contêiner, o Compose define `POSTGRES_HOST=database` e `POSTGRES_PORT=5432`, independentemente da porta publicada no host.
+
+## Executar API e banco com Docker
+
+A partir da raiz, após configurar `.env`:
+
 ```bash
-poetry self add poetry-plugin-shell
+docker compose up -d --build
+docker compose exec api python manage.py migrate
+docker compose exec api python manage.py createsuperuser
 ```
-## Ativa o ambiente:
+
+A API fica em `http://localhost:8000` e o admin em `http://localhost:8000/admin/`. A raiz `/` não possui uma view e pode responder 404. A imagem usa Gunicorn e não inclui ferramentas do grupo de desenvolvimento; execute lint e Pytest pelo ambiente Poetry local.
+
 ```bash
-poetry shell
+docker compose logs -f api
+docker compose down
 ```
-### Instalação das dependências
+
+O banco permanece no volume `codefan_postgres_data` gerenciado pelo Compose. Não use `down -v` se quiser preservar os dados. Migrações e criação de superusuário são etapas explícitas; o startup não as executa. O frontend é iniciado separadamente conforme o [guia web](../web/README.md).
+
+O Compose não configura entrega de arquivos estáticos do admin para produção. O uso de Gunicorn, por si só, não torna esta configuração uma implantação de produção completa.
+
+## Executar a API localmente
+
+Configure `POSTGRES_HOST=127.0.0.1` e a porta publicada no `.env` da raiz. Inicie apenas o banco pelo Compose, evitando disputar a porta 8000 com o contêiner da API:
+
 ```bash
-poetry install
+docker compose up -d database
+cd api
+poetry install --no-root
+poetry run python manage.py migrate
+poetry run python manage.py createsuperuser
+poetry run task dev
 ```
 
-## Ferramentas de produtividade:
-O projeto utiliza duas ferramentas modernas para garantir a qualidade do código e facilitar a rotina de comandos:
+Se a API em Docker já estiver ativa, pare-a com `docker compose stop api` na raiz antes de iniciar o servidor local.
 
-- Ruff: Um linter e formatador de código extremamente rápido, escrito em Rust.
-- Taskipy: Um gerenciador de tarefas leve que simplifica a execução de comandos longos no terminal.
+## Comandos e verificações
 
-## Comandos Úteis(Taskipy & Django):
-### Formatação e Qualidade:
+Execute dentro de `api/` com o ambiente configurado:
 
-- task lint: Procura por erros de sintaxe ou bugs e verifica se a formatação segue o padrão do projeto, sem alterar nenhum arquivo.
-- task format: Corrige automaticamente os erros que consegue, organiza os imports e reformata todo o código para deixá-lo limpo e padronizado.
+| Comando | Finalidade |
+| --- | --- |
+| `poetry run task lint` | Ruff e verificação de formatação, sem alterar arquivos. |
+| `poetry run task format` | Corrigir lint e formatar; altera arquivos. |
+| `poetry run task makemigrations` | Gerar migrações das alterações de modelos. |
+| `poetry run task migrate` | Aplicar migrações. |
+| `poetry run task dev` | Servidor Django de desenvolvimento. |
+| `poetry run task shell` | Shell do Django. |
+| `poetry run task test` | Executar Pytest. |
+| `poetry run python manage.py check` | Verificar configuração do Django. |
 
-### Banco de Dados(Django ORM)
+Para reproduzir as verificações locais do CI:
 
-- task makemigrations: Identifica e mapeia as alterações feitas nos modelos do banco de dados (sem aplicá-las ainda).
-- task migrate: Aplica efetivamente as migrações pendentes no banco de dados.
+```bash
+poetry run task lint
+poetry run python manage.py check
+poetry run pytest -q
+```
 
-### Execução e Testes
+A suíte atual contém um smoke test da página de login do admin; ela não valida funcionalidades de produto ainda não implementadas. Testes futuros que acessarem banco precisam de uma instância de desenvolvimento/teste e das permissões necessárias para criar o banco de testes.
 
-- task dev: Inicia o servidor de desenvolvimento local do Django (localhost).
-- task shell: Abre o terminal interativo do Django para testar códigos e consultas diretamente no contexto da aplicação.
-- task test: Roda a suíte de testes automatizados usando o Pytest.
+Para verificar o build da imagem, a partir da raiz:
+
+```bash
+docker build --tag codefan-api:local ./api
+```
+
+Voltar ao [README principal](../README.md) · [Contribuir](../docs/CONTRIBUINDO.md).
